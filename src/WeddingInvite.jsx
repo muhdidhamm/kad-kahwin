@@ -1,4 +1,6 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
+import bgImage from "/public/bg-wedding.jpg";
+//import { ReactComponent as QrCode } from "@/assets/kod-qr.svg";
 import { motion } from "framer-motion";
 import {
   Calendar,
@@ -10,6 +12,12 @@ import {
   Copy,
   Check,
   ExternalLink,
+  Instagram, 
+  Facebook, 
+  Music2, 
+  MessageSquare, 
+  ChevronLeft, 
+  ChevronRight
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
@@ -21,13 +29,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 
 /**
  * KAD KAHWIN INTERAKTIF – MIRROR SAMPLES (ELEGAN GELAP + EMAS)
@@ -42,32 +43,33 @@ import {
 const CONFIG = {
   theme: { bg: "#2b2b2b", gold: "#d4af37", goldSoft: "#c8a94b" },
   couple: {
-    groom: "مزالن",
-    bride: "مرياني",
+    groom: "ادهم",
+    bride: "أليسا",
     arabic: { walimah: "وليمة العروس", dan: "و" },
-    latin: { groom: "Mazlan", bride: "Mriyani" },
+    latin: { groom: "Idham", bride: "Alyssa" },
   },
   event: {
     title: "WALIMATULURUS",
-    hijri: "أحد، ٢٠ جمادى الآخر ١٤٤٦",
-    date: new Date("2024-12-22T12:00:00+08:00"),
-    dateMalayUpper: "AHAD, 22 DISEMBER 2024",
-    venueName: "BUKIT BERUNTUNG GOLF CLUB",
-    venueAddress: "Jalan BR 1/2, 48300 Bukit Beruntung, Selangor",
+    hijri: "سبت، ٧ ربيع الأوّل ١٤٤٧",
+    date: new Date("2025-08-29T12:00:00+08:00"),
+    dateMalayUpper: "SABTU, 29 OGOS 2026",
+    venueName: "RUMAH HAJI ABD RASHID ANUAR",
+    venueAddress: "34, Jalan Sultan Salahuddin Abdul Aziz Shah 9/6, Seksyen 9, 40100 Shah Alam, Selangor",
     mapsUrl:
-      "https://www.google.com/maps?q=Bukit+Beruntung+Golf+%26+Country+Club",
+      "https://maps.app.goo.gl/nqrBej9o2XaFhkwK8",
     quote:
-      "“Dan Kami menciptakan kamu berpasang-pasangan” Surah An-Naba (78:8)",
+      "“Dan Kami menciptakan kamu berpasang-pasangan”\nSurah An-Naba (78:8)",
   },
   bank: {
-    bankName: "Maybank Berhad",
-    accountNumber: "162076697556",
-    accountName: "Mriyani & Mazlan",
+    bankName: "CIMB Berhad",
+    accountNumber: "7634409605",
+    accountName: "NUR ALYSSA BINTI ABD RASHID ANUAR",
     duitNowId: "",
   },
   contact: {
-    person1: { name: "Idham", phone: "+60123456789" },
-    person2: { name: "Ying", phone: "+60198765432" },
+    person1: { name: "Rashid", phone: "+60133811815" },
+    person2: { name: "Jamaiah", phone: "+60133812323" },
+    person3: { name: "Idham", phone: "+601111210750"},
   },
   wishlist: [
     { label: "Toaster", url: "https://shopee.com.my/" },
@@ -138,37 +140,6 @@ function downloadICS({
   URL.revokeObjectURL(url);
 }
 
-// Ornamental kiri ala batik
-const DecorativeBorder = () => (
-  <div className="absolute inset-y-0 left-0 w-24 flex items-center">
-    <svg
-      viewBox="0 0 100 1000"
-      preserveAspectRatio="none"
-      className="h-full w-full"
-    >
-      <defs>
-        <pattern
-          id="motif"
-          x="0"
-          y="0"
-          width="100"
-          height="140"
-          patternUnits="userSpaceOnUse"
-        >
-          <g fill={CONFIG.theme.gold} opacity="0.95">
-            <path d="M50 10 l10 10 -10 10 -10-10z" />
-            <circle cx="25" cy="35" r="6" />
-            <circle cx="75" cy="35" r="6" />
-            <path d="M50 55 a15 15 0 1 0 0.1 0" />
-            <path d="M20 90 h60" stroke={CONFIG.theme.gold} strokeWidth="2" />
-          </g>
-        </pattern>
-      </defs>
-      <rect x="0" y="0" width="100" height="1000" fill="url(#motif)" />
-    </svg>
-  </div>
-);
-
 const Panel = ({ children }) => (
   <Card className="bg-white/95 backdrop-blur border-0 shadow-lg rounded-2xl">
     <CardContent className="p-6">{children}</CardContent>
@@ -235,7 +206,7 @@ const MoneyGiftSheet = () => {
     const image64 = `data:image/svg+xml;base64,${svg64}`;
     const a = document.createElement("a");
     a.href = image64;
-    a.download = "kod-qr.svg";
+    a.download = "kod-qr.jpg";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -253,54 +224,50 @@ const MoneyGiftSheet = () => {
           <SheetTitle>Money Gift</SheetTitle>
         </SheetHeader>
         <div className="grid gap-4 py-4">
-          <Panel>
-            <div className="grid gap-2">
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div>
-                  <div className="text-muted-foreground">Nama Bank</div>
-                  <div className="font-medium">{CONFIG.bank.bankName}</div>
-                </div>
-                <div>
-                  <div className="text-muted-foreground">Nama Akaun</div>
-                  <div className="font-medium">{CONFIG.bank.accountName}</div>
-                </div>
-                <div className="col-span-2">
-                  <div className="text-muted-foreground">No Akaun</div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono tracking-wider text-lg">
-                      {CONFIG.bank.accountNumber}
-                    </span>
-                    <Button
-                      size="icon"
-                      variant="outline"
-                      onClick={() => copy(CONFIG.bank.accountNumber)}
-                    >
-                      {copied ? (
-                        <Check className="h-4 w-4" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
+          <div className="grid gap-2">
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <div className="text-muted-foreground">Nama Bank</div>
+                <div className="font-medium">{CONFIG.bank.bankName}</div>
               </div>
-              <div
-                className="mt-4 flex flex-col items-center gap-3"
-                ref={qrRef}
-              >
-                <div className="text-sm text-muted-foreground">Kod QR</div>
-                <QRCodeSVG
-                  value={payload}
-                  includeMargin
-                  className="rounded-xl p-2 bg-white"
-                  size={200}
-                />
-                <Button variant="outline" onClick={downloadQR}>
-                  Simpan
-                </Button>
+              <div>
+                <div className="text-muted-foreground">Nama Akaun</div>
+                <div className="font-medium">{CONFIG.bank.accountName}</div>
+              </div>
+              <div className="col-span-2">
+                <div className="text-muted-foreground">No Akaun</div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono tracking-wider text-lg">
+                    {CONFIG.bank.accountNumber}
+                  </span>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() => copy(CONFIG.bank.accountNumber)}
+                  >
+                    {copied ? (
+                      <Check className="h-4 w-4" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
-          </Panel>
+            <div
+              className="mt-4 flex flex-col items-center gap-3">
+              <div className="text-sm text-muted-foreground">Kod QR</div>
+              <QRCodeSVG
+                value={payload}
+                includeMargin
+                className="rounded-xl p-2 bg-white"
+                size={200}
+              />
+              <Button variant="outline" onClick={downloadQR}>
+                Simpan
+              </Button>
+            </div>
+          </div>
         </div>
       </SheetContent>
     </Sheet>
@@ -350,7 +317,7 @@ const ContactSheet = () => (
         <SheetTitle>Contact</SheetTitle>
       </SheetHeader>
       <div className="py-4 grid gap-3">
-        {[CONFIG.contact.person1, CONFIG.contact.person2].map((p, i) => (
+        {[CONFIG.contact.person1, CONFIG.contact.person2, CONFIG.contact.person3].map((p, i) => (
           <a
             key={i}
             href={`tel:${p.phone}`}
@@ -380,21 +347,19 @@ const LocationSheet = () => (
       <SheetHeader>
         <SheetTitle>Lokasi</SheetTitle>
       </SheetHeader>
-      <div className="py-4 grid gap-4">
-        <Panel>
-          <div className="space-y-2">
-            <div className="font-medium">{CONFIG.event.venueName}</div>
-            <div className="text-sm text-muted-foreground">
-              {CONFIG.event.venueAddress}
-            </div>
-            <Button asChild className="mt-2">
-              <a href={CONFIG.event.mapsUrl} target="_blank" rel="noreferrer">
-                <MapPin className="h-4 w-4 mr-2" />
-                Buka Google Maps
-              </a>
-            </Button>
+      <div className="py-4 grid gap-4" >
+        <div className="space-y-2">
+          <div className="font-medium">{CONFIG.event.venueName}</div>
+          <div className="text-sm text-muted-foreground">
+            {CONFIG.event.venueAddress}
           </div>
-        </Panel>
+          <Button asChild className="mt-2">
+            <a href={CONFIG.event.mapsUrl} target="_blank" rel="noreferrer">
+              <MapPin className="h-4 w-4 mr-2" />
+              Buka Google Maps
+            </a>
+          </Button>
+        </div>
       </div>
     </SheetContent>
   </Sheet>
@@ -433,19 +398,141 @@ const CalendarSheet = () => (
   </Sheet>
 );
 
+function Countdown({ targetDate }) {
+  const [timeLeft, setTimeLeft] = useState(getTimeRemaining(targetDate));
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(getTimeRemaining(targetDate));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [targetDate]);
+
+  return (
+    <div className="text-center py-8">
+      <div className="flex items-center justify-center gap-4 mb-2">
+        <div className="h-px flex-1 bg-yellow-600"></div>
+        <span className="text-2xl font-semibold tracking-wide text-yellow-500">
+          MENANTI HARI
+        </span>
+        <div className="h-px flex-1 bg-yellow-600"></div>
+      </div>
+
+      <div className="flex justify-center gap-4 mt-4">
+        <FlipUnit label="Hari" value={timeLeft.days} />
+        <FlipUnit label="Jam" value={timeLeft.hours} />
+        <FlipUnit label="Minit" value={timeLeft.minutes} />
+        <FlipUnit label="Saat" value={timeLeft.seconds} />
+      </div>
+    </div>
+  );
+}
+
+function FlipUnit({ label, value }) {
+  return (
+    <div className="flex flex-col items-center">
+      <div className="bg-white text-black rounded-md shadow-md px-3 py-2 text-2xl font-bold min-w-[60px] text-center">
+        {String(value).padStart(2, "0")}
+      </div>
+      <span className="mt-2 text-sm text-yellow-500">{label}</span>
+    </div>
+  );
+}
+
+function getTimeRemaining(targetDate) {
+  const total = Date.parse(targetDate) - Date.now();
+  const seconds = Math.max(Math.floor((total / 1000) % 60), 0);
+  const minutes = Math.max(Math.floor((total / 1000 / 60) % 60), 0);
+  const hours = Math.max(Math.floor((total / (1000 * 60 * 60)) % 24), 0);
+  const days = Math.max(Math.floor(total / (1000 * 60 * 60 * 24)), 0);
+
+  return { total, days, hours, minutes, seconds };
+}
+
+function Gallery({ images }) {
+  const [idx, setIdx] = useState(0);
+  return (
+    <div className="relative w-full max-w-md mx-auto">
+      <img src={images[idx]} alt="" className="w-full rounded-xl shadow" />
+      <button onClick={() => setIdx((idx - 1 + images.length) % images.length)}
+        className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full">
+        <ChevronLeft />
+      </button>
+      <button onClick={() => setIdx((idx + 1) % images.length)}
+        className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full">
+        <ChevronRight />
+      </button>
+    </div>
+  );
+}
+
+function Guestbook() {
+  const [messages, setMessages] = useState(
+    JSON.parse(localStorage.getItem("guestbook") || "[]")
+  );
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({ name: "", msg: "" });
+
+  const submit = () => {
+    const updated = [...messages, form];
+    setMessages(updated);
+    localStorage.setItem("guestbook", JSON.stringify(updated));
+    setForm({ name: "", msg: "" });
+    setOpen(false);
+  };
+
+  return (
+    <div className="space-y-3">
+      <Button onClick={() => setOpen(true)}>
+        <MessageSquare className="mr-2 h-4 w-4"/> Sampaikan ucapan
+      </Button>
+      {messages.map((m, i) => (
+        <div key={i} className="border p-3 rounded-xl">
+          <div className="font-semibold">{m.name}</div>
+          <div className="text-sm text-muted-foreground">{m.msg}</div>
+        </div>
+      ))}
+
+      {open && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+          <div className="bg-black rounded-xl p-6 w-80">
+            <h3 className="font-semibold mb-3">Sampaikan ucapan</h3>
+            <input
+              className="w-full border p-2 rounded mb-2"
+              placeholder="Nama"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
+            <textarea
+              className="w-full border p-2 rounded mb-2"
+              placeholder="Ucapan"
+              value={form.msg}
+              onChange={(e) => setForm({ ...form, msg: e.target.value })}
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setOpen(false)}>Batal</Button>
+              <Button onClick={submit}>Hantar</Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function WeddingInvite() {
   const dText = formatDateRange(CONFIG.event.date);
   return (
     <div
-      className="min-h-screen"
-      style={{ backgroundColor: CONFIG.theme.bg, color: CONFIG.theme.gold }}
+      className="min-h-screen w-full bg-fixed bg-cover bg-center"
+      style={{ backgroundImage: `url(${bgImage})`, color: CONFIG.theme.gold }}
     >
-      <div className="relative flex-1 flex items-center justify-center px-6 py-10">
-        <DecorativeBorder />
+      <div className="relative bg-black/50 flex-1 flex items-center justify-center px-6 py-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          viewport={{ once: false, amount: 0.3 }}
           className="max-w-sm w-full text-center"
         >
           <div className="space-y-6">
@@ -487,16 +574,157 @@ export default function WeddingInvite() {
                 {CONFIG.event.venueName}
               </div>
             </div>
-            <div className="text-xs italic opacity-80">
+            <div className="text-xs italic opacity-80, whitespace-pre-line text-center">
               {CONFIG.event.quote}
             </div>
           </div>
         </motion.div>
       </div>
+      {/* New Sections */}
+      <div className="bg-black/50 max-w-md mx-auto px-4 py-8 space-y-10 text-gold">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: false, amount: 0.3 }}
+        >
+        <h2 className="font-semibold text-lg text-center">ASSALAMUALAIKUM WBT & SALAM SEJAHTERA</h2>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: false, amount: 0.3 }}
+        >
+          <p className="font-medium text-center">Abd Rashid Anuar bin Zakaria</p>
+          <p className="font-medium text-center">&</p>
+          <p className="font-medium text-center">Jamaiah binti Mahamad</p>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: false, amount: 0.3 }}
+        >
+          <p className="font-medium text-center">
+            Dengan penuh kesyukuran kehadrat Illahi, kami mempersilakan Dato'/Datin/Dr/Tuan/Puan/Encik/Cik ke walimatulurus anakanda kesayangan kami
+          </p>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: false, amount: 0.3 }}
+        >
+          <p className="font-medium text-center">Nur Alyssa binti Abd Rashid Anuar</p>
+          <p className="font-medium text-center">&</p>
+          <p className="font-medium text-center">Muhammad Idham bin Padil</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: false, amount: 0.3 }}
+        >
+          <h2 className="text-lg font-semibold text-center">Maklumat Majlis</h2>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: false, amount: 0.3 }}
+        >
+          <p className="font-small text-center">Tarikh: {CONFIG.event.dateMalayUpper}</p>
+          <p className="font-small text-center">Masa: 11:00 Pagi - 4:00 Petang</p>
+          <p className="font-small text-center">Tempat:</p>
+          <p className="font-small text-center"> {CONFIG.event.venueName}, </p>
+          <p className="font-small text-center"> {CONFIG.event.venueAddress}</p>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: false, amount: 0.3 }}
+        >
+          <h3 className="font-semibold mt-3 text-center">Aturcara Majlis</h3>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: false, amount: 0.3 }}
+        >
+          <ul className="list-disc ml-6 text-sm">
+            <p className="font-small text-center">11:00 AM - Majlis Bermula</p>
+            <p className="font-small text-center">12:30 PM - Ketibaan Pengantin</p>
+            <p className="font-small text-center">4:00 PM - Majlis Berakhir</p>
+          </ul>
+        </motion.div>
+        
+        {/* Countdown Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: false, amount: 0.3 }}
+        >
+        <Countdown targetDate="2026-08-29T11:00:00" />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: false, amount: 0.3 }}
+        >
+          <h2 className="text-lg font-semibold mb-2 text-center">Galeri</h2>
+          <Gallery images={["/hall1.jpg","/hall2.jpg","/hall3.jpg"]}/>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: false, amount: 0.3 }}
+        >
+          <h2 className="text-lg font-semibold mb-2 text-center">Guestbook</h2>
+          <Guestbook/>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: false, amount: 0.3 }}
+        >
+        <div className="p-4 border rounded-xl italic text-center">
+          Ya Allah, berkatilah majlis perkahwinan ini, 
+          limpahkan baraqah dan rahmat kepada kedua mempelai ini, 
+          Kurniakanlah mereka zuriat yang soleh dan solehah. 
+          Kekalkanlah jodoh mereka di dunia dan di akhirat dan sempurnakanlah agama mereka dengan berkat ikatan ini.
+        </div>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: false, amount: 0.3 }}
+        >
+        <div className="text-center space-y-2">
+          <div className="font-semibold">#AlyssaXIdham</div>
+          <div className="text-xs">Created with ❤️ by Muhammad Idham</div>
+          <div className="flex justify-center gap-4 mt-2">
+            <a href="#"><Instagram /></a>
+            <a href="#"><Facebook /></a>
+            <a href="#"><Music2 /></a>
+          </div>
+        </div>
+        </motion.div>
+      </div>
 
       {/* Bottom Nav */}
       <div
-        className="sticky bottom-0 w-full"
+        className="sticky bottom-0 w-full left-0 right-0"
         style={{
           borderTop: `1px solid ${CONFIG.theme.goldSoft}33`,
           background: "rgba(20,20,20,0.85)",
